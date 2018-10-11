@@ -5,27 +5,30 @@ import Book from './Book.js'
 
 class BooksApp extends React.Component {
   state = {
-    /**
+    /*
      * TODO: Instead of using this state variable to keep track of which page
      * we're on, use the URL in the browser's address bar. This will ensure that
      * users can use the browser's back and forward buttons to navigate between
      * pages, as well as provide a good URL they can bookmark and share.
      */
-    current: [],
-    desired: [],
+    currentlyReading: [],
+    wantToRead: [],
     read: [],
     showSearchPage: false
   }
 
+  //get books from API & call function 'placeOnShelf' with the response data
   componentDidMount(){
     BooksAPI.getAll()
       .then(books => this.placeOnShelf(books))
   }
 
+  //set initial state (place the books on their respective shelves)
   placeOnShelf = (books) => {
     let currentBooks = []
     let desiredBooks = []
     let alreadyRead = []
+
     books.forEach(book => {
       if (book.shelf === 'currentlyReading'){
         currentBooks.push(book)
@@ -42,14 +45,39 @@ class BooksApp extends React.Component {
     })
 
     this.setState({
-      current: currentBooks, desired: desiredBooks, read: alreadyRead
+      currentlyReading: currentBooks, wantToRead: desiredBooks, read: alreadyRead
     })
   }
 
+  //update the API when a user wants to move a book to a new shelf
+  updateAPI = (book, shelf) => {
+    BooksAPI.update(book, shelf)
+  }
+
+  //update the local state so the change is reflected in the browser
+  changeState = (book, newShelf) => {
+    let previous = book.shelf
+    let removeFromList = [...this.state[book.shelf]]
+    let addToList = [...this.state[newShelf]]
+
+    addToList.push(book)
+
+    addToList = addToList.map(item => {
+      if(item.id === book.id){
+        item.shelf = newShelf
+        return item
+      }
+      return item
+    })
+
+    removeFromList = removeFromList.filter(item => item.id !== book.id)
+
+    this.setState({
+      [previous]: removeFromList, [newShelf]: addToList
+    })
+  }
 
   render() {
-    //console.log(this.state)
-
     return (
       <div className="app">
         {this.state.showSearchPage ? (
@@ -84,11 +112,13 @@ class BooksApp extends React.Component {
                   <h2 className="bookshelf-title">Currently Reading</h2>
                   <div className="bookshelf-books">
                     <ol className="books-grid">
-                      {this.state.current.map(book => {
+                      {this.state.currentlyReading.map(book => {
                         return  <li key={book.id}>
-                                  <Book book={book}/>
+                                  <Book book={book}
+                                    changeState={this.changeState}
+                                    updateAPI={this.updateAPI}/>
                                 </li>
-                      })}
+                        })}
                     </ol>
                   </div>
                 </div>
@@ -96,11 +126,13 @@ class BooksApp extends React.Component {
                   <h2 className="bookshelf-title">Want to Read</h2>
                   <div className="bookshelf-books">
                     <ol className="books-grid">
-                        {this.state.desired.map(book => {
+                        {this.state.wantToRead.map(book => {
                           return  <li key={book.id}>
-                                    <Book book={book}/>
+                                    <Book book={book}
+                                    changeState={this.changeState}
+                                    updateAPI={this.updateAPI}/>
                                   </li>
-                        })}
+                          })}
                     </ol>
                   </div>
                 </div>
@@ -110,9 +142,11 @@ class BooksApp extends React.Component {
                     <ol className="books-grid">
                       {this.state.read.map(book => {
                         return  <li key={book.id}>
-                                  <Book book={book}/>
+                                  <Book book={book}
+                                  changeState={this.changeState}
+                                  updateAPI={this.updateAPI}/>
                                 </li>
-                      })}
+                        })}
                     </ol>
                   </div>
                 </div>
