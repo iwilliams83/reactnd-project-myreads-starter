@@ -5,7 +5,7 @@ export default class Book extends Component {
 
   //handle shelf selection from the dropdown:
   handleChange = (e) => {
-    //callbacks are passed down to components as props:
+    //use callbacks that were passed down from App:
     this.props.changeState(this.props.book, e.target.value)
     this.props.updateAPI(this.props.book, e.target.value)
   }
@@ -32,7 +32,7 @@ export default class Book extends Component {
           </div>
         </div>
         <div className="book-title">{book.title}</div>
-        <div className="book-authors">{book.authors[0]}</div>
+        <div className="book-authors">{book.authors && book.authors[0]}</div>
       </div>
           )
   }
