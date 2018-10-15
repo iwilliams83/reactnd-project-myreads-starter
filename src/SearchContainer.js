@@ -19,15 +19,36 @@ class SearchContainer extends Component {
             this.setState({results: []})
           }
           else {
-            this.setState({results: res})
+            this.setState({results: res}, this.displayCorrectStatus)
           }
         })
     )
   }
 
+  // search results should display correct status if book is already on shelf
+  displayCorrectStatus = () => {
+    let onShelf = this.props.onShelf
+    let booksArray = [...onShelf.currentlyReading, ...onShelf.wantToRead, ...onShelf.read]
+    let booksOnShelf = {}
+    booksArray.forEach(book => {
+      if (!booksOnShelf[book.id]){
+        booksOnShelf[book.id] = book
+      }
+    })
+
+    let updatedResults = this.state.results.map(item => {
+      if (booksOnShelf[item.id]){
+        return booksOnShelf[item.id]
+      }
+      return item
+    })
+
+    this.setState({results: updatedResults})
+  }
+
   render(){
     const { results } = this.state
-
+  
     return  <div className="search-books">
               <div className="search-books-bar">
                 <Link to="/" className="close-search" >Close</Link>
@@ -41,7 +62,8 @@ class SearchContainer extends Component {
                     {results.length > 0 && results.map(book => {
                       return(
                         <li key={book.id}>
-                          <Book book={book} addToShelf={this.props.addToShelf}/>
+                          <Book book={book} addToShelf={this.props.addToShelf}
+                          changeState={this.props.changeState}/>
                         </li>
                     )})}
                 </ol>

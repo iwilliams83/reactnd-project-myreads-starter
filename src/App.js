@@ -128,7 +128,9 @@ class BooksApp extends React.Component {
         )}/>
 
         <Route path="/search" render={() => (
-          <SearchContainer addToShelf={this.addToShelf}/>
+          <SearchContainer addToShelf={this.addToShelf}
+            changeState={this.changeState}
+            onShelf={this.state}/>
         )}/>
 
       </div>
