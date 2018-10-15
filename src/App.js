@@ -18,6 +18,13 @@ class BooksApp extends React.Component {
       .then(books => this.placeOnShelf(books))
   }
 
+  addToShelf = (book, shelf) => {
+    book.shelf = shelf
+    this.setState(prevState => ({
+      [shelf]: [...prevState[shelf], book]
+    }))
+  }
+
   //set initial state (place the books on their respective shelves)
   placeOnShelf = (books) => {
     let currentBooks = []
@@ -49,43 +56,44 @@ class BooksApp extends React.Component {
     return (
       <div className="bookshelf-books">
         <ol className="books-grid">
-          {bookList.map(book => {
+          { bookList.map(book => {
             return  <li key={book.id}> <Book book={book}
-                        changeState={this.changeState}
-                        updateAPI={this.updateAPI}/> </li>
-          })}
+                        changeState={this.changeState}/>
+                    </li>})
+          }
         </ol>
       </div>
     )
   }
 
-  //update the API when a user wants to move a book to a new shelf
-  updateAPI = (book, shelf) => {
-    BooksAPI.update(book, shelf)
-  }
-
   //update the local state so the change is reflected in the browser
   changeState = (book, newShelf) => {
+
     let previous = book.shelf
     let removeFromList = [...this.state[book.shelf]]
-    let addToList = [...this.state[newShelf]]
+    if (newShelf === 'none'){
+      removeFromList = removeFromList.filter(item => item.id !== book.id)
+      this.setState({[previous]: removeFromList})
+    } else {
+      let addToList = [...this.state[newShelf]]
 
-    addToList.push(book)
+      addToList.push(book)
 
-    addToList = addToList.map(item => {
-      if(item.id === book.id){
-        item.shelf = newShelf
+      addToList = addToList.map(item => {
+        if(item.id === book.id){
+          item.shelf = newShelf
+          return item
+        }
         return item
-      }
-      return item
-    })
+      })
 
-    removeFromList = removeFromList.filter(item => item.id !== book.id)
+      removeFromList = removeFromList.filter(item => item.id !== book.id)
 
-    this.setState({
-      [previous]: removeFromList,
-      [newShelf]: addToList
-    })
+      this.setState({
+        [previous]: removeFromList,
+        [newShelf]: addToList
+      })
+    }
   }
 
   render() {
@@ -120,9 +128,9 @@ class BooksApp extends React.Component {
         )}/>
 
         <Route path="/search" render={() => (
-          <SearchContainer />
+          <SearchContainer addToShelf={this.addToShelf}/>
         )}/>
-        
+
       </div>
     )
   }

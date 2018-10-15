@@ -1,12 +1,19 @@
 import React, { Component } from 'react'
+import * as BooksAPI from './BooksAPI'
 
 export default class Book extends Component {
 
   //handle shelf selection from the dropdown:
   handleChange = (e) => {
     //use callbacks that were passed down from App:
-    this.props.changeState(this.props.book, e.target.value)
-    this.props.updateAPI(this.props.book, e.target.value)
+    if(!this.props.book.shelf){
+      this.props.addToShelf(this.props.book, e.target.value)
+      BooksAPI.update(this.props.book, e.target.value)
+    }
+    else {
+      this.props.changeState(this.props.book, e.target.value)
+      BooksAPI.update(this.props.book, e.target.value)
+    }
   }
 
   render(){
@@ -21,7 +28,7 @@ export default class Book extends Component {
         <div className="book-top">
         <div className="book-cover" style={style}></div>
           <div className="book-shelf-changer">
-            <select onChange={this.handleChange} value={book.shelf}>
+            <select onChange={this.handleChange} value={book.shelf || "none"}>
               <option value="move" disabled>Move to...</option>
               <option value="currentlyReading">Currently Reading</option>
               <option value="wantToRead">Want to Read</option>

@@ -23,7 +23,6 @@ class SearchContainer extends Component {
           }
         })
     )
-
   }
 
   render(){
@@ -42,7 +41,7 @@ class SearchContainer extends Component {
                     {results.length > 0 && results.map(book => {
                       return(
                         <li key={book.id}>
-                          <Book book={book}/>
+                          <Book book={book} addToShelf={this.props.addToShelf}/>
                         </li>
                     )})}
                 </ol>
