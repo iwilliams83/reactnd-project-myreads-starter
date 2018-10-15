@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-//import * as BooksAPI from './BooksAPI'
 
 export default class Book extends Component {
 
@@ -34,6 +33,6 @@ export default class Book extends Component {
         <div className="book-title">{book.title}</div>
         <div className="book-authors">{book.authors && book.authors[0]}</div>
       </div>
-          )
+    )
   }
 }
