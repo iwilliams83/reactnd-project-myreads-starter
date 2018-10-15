@@ -18,9 +18,16 @@ export default class Book extends Component {
 
   render(){
     let book = this.props.book
+    let url;
+    if (book.imageLinks){
+      url = `url(${book.imageLinks.thumbnail}&imgtk=AFLRE73-GnPVEyb7MOCxDzOYF1PTQRuf6nCss9LMNOSWBpxBrz8Pm2_mFtWMMg_Y1dx92HT7cUoQBeSWjs3oEztBVhUeDFQX6-tWlWz1-feexS0mlJPjotcwFqAg6hBYDXuK_bkyHD-y)`
+    }
+    else {
+      url = ''
+    }
 
     let style = { width: 128, height: 193,
-      backgroundImage: `url(${book.imageLinks.thumbnail}&imgtk=AFLRE73-GnPVEyb7MOCxDzOYF1PTQRuf6nCss9LMNOSWBpxBrz8Pm2_mFtWMMg_Y1dx92HT7cUoQBeSWjs3oEztBVhUeDFQX6-tWlWz1-feexS0mlJPjotcwFqAg6hBYDXuK_bkyHD-y)`
+      backgroundImage: url
     }
 
     return (
